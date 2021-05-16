@@ -1,8 +1,7 @@
-import 'dart:io';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:reminder_app/constants.dart';
+
 import 'package:reminder_app/utils/utils.dart';
 
 class HomePage extends StatefulWidget {
@@ -14,38 +13,29 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   TimeOfDay _pickedTime;
-  bool notificationsAllowed = false;
+
   @override
   void initState() {
     super.initState();
-    AwesomeNotifications().cancelAllSchedules();
-    AwesomeNotifications().initialize(null, [
-      NotificationChannel(
-          channelKey: 'basic_channel',
-          channelName: 'Basic notifications',
-          channelDescription: 'Notification channel for basic tests',
-          defaultColor: Color(0xFF9D50DD),
-          ledColor: Colors.white)
-    ]);
 
     AwesomeNotifications().createdStream.listen((receivedNotification) {
       String createdSourceText =
-          AssertUtils.toSimpleEnumString(receivedNotification.createdSource);
+      AssertUtils.toSimpleEnumString(receivedNotification.createdSource);
       Fluttertoast.showToast(msg: '$createdSourceText notification created');
     });
 
     AwesomeNotifications().displayedStream.listen((receivedNotification) {
       String createdSourceText =
-          AssertUtils.toSimpleEnumString(receivedNotification.createdSource);
+      AssertUtils.toSimpleEnumString(receivedNotification.createdSource);
       Fluttertoast.showToast(msg: '$createdSourceText notification displayed');
     });
 
     AwesomeNotifications().actionStream.listen((receivedNotification) {
       Navigator.pushNamed(context, "/notification_received_page");
       Fluttertoast.showToast(
-          msg: 'Msg: ' + receivedNotification.buttonKeyPressed,
-          backgroundColor: Colors.grey[200],
-          textColor: Colors.white);
+          msg: 'Msg: ${ StringUtils.isNullOrEmpty(receivedNotification.buttonKeyPressed, considerWhiteSpaceAsEmpty: true) ? 'normal tap' : receivedNotification.buttonKeyPressed }',
+          backgroundColor: Colors.blue[200],
+          textColor: Colors.black);
     });
 
     AwesomeNotifications().dismissedStream.listen((receivedNotification) {
@@ -78,17 +68,6 @@ class _HomePageState extends State<HomePage> {
     DateTime _dateTime = DateTime(DateTime.now().year, DateTime.now().month,
         DateTime.now().day, _pickedTime.hour, _pickedTime.minute);
 
-<<<<<<< Updated upstream
-    while (_notificationId < 8) {
-      await showNotificationWithActionButtons(
-        _notificationId,
-        _dateTime,
-      );
-      print("Notification Scehduled for Day - $_notificationId - $_dateTime");
-      _notificationId += 1;
-      _dateTime = _dateTime.add(Duration(days: 1));
-    }
-=======
     AwesomeNotifications().isNotificationAllowed().then((isAllowed) async {
       if (!isAllowed) {
         // Insert here your friendly dialog box before call the request method
@@ -99,12 +78,12 @@ class _HomePageState extends State<HomePage> {
         }
       }
 
-      while (_notificationId < 8) {
+      while (_notificationId < 2) {
         if (
-          await showNotificationWithActionButtons(
-            _notificationId,
-            _dateTime,
-          )
+        await showNotificationWithActionButtons(
+          _notificationId,
+          _dateTime,
+        )
         ){
           print('Notification Scheduled for Day - $_notificationId - $_dateTime');
         }
@@ -116,7 +95,6 @@ class _HomePageState extends State<HomePage> {
         _dateTime = _dateTime.add(Duration(days: 1));
       }
     });
->>>>>>> Stashed changes
   }
 
   @override
@@ -125,8 +103,9 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
+        brightness: Brightness.dark,
         title: Text(
-          "Sleep reminder",
+          'Sleep reminder',
         ),
       ),
       body: Padding(
@@ -148,14 +127,14 @@ class _HomePageState extends State<HomePage> {
               ),
               child: Container(
                 child: Image.asset(
-                  "assets/sleep.jpeg",
+                  'assets/sleep.jpeg',
                   // width: MediaQuery.of(context).size.width * 0.6,
                   // height: MediaQuery.of(context).size.height * 0.23,
                 ),
               ),
             ),
             Text(
-              "Good sleep can improve concentration and productivity",
+              'Good sleep can improve concentration and productivity',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: size.height * 0.020,
@@ -172,7 +151,7 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 children: [
                   Text(
-                    "To create sleep reminder, Click the below button & enter your sleeping time",
+                    'To create sleep reminder, Click the below button & enter your sleeping time',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: size.height * 0.020,
@@ -183,12 +162,10 @@ class _HomePageState extends State<HomePage> {
                     onPressed: () async {
                       if (await pickScheduleDate(context)) {
                         await scheduleSleepReminder(_pickedTime);
-                        Fluttertoast.showToast(
-                            msg: 'Sleep reminder created successfully');
                       }
                     },
                     child: Text(
-                      "Create sleep reminder",
+                      'Create sleep reminder',
                     ),
                   ),
                 ],
@@ -206,7 +183,7 @@ class _HomePageState extends State<HomePage> {
                   listScheduledNotifications(context);
                 },
                 child: Text(
-                  "List all active schedules",
+                  'List all active schedules',
                 ),
               ),
             ),
@@ -217,7 +194,7 @@ class _HomePageState extends State<HomePage> {
                   cancelAllSchedules();
                 },
                 child: Text(
-                  "Cancel all active schedules",
+                  'Cancel all active schedules',
                 ),
               ),
             ),
