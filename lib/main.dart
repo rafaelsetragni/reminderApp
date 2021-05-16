@@ -6,14 +6,19 @@ import 'package:reminder_app/pages/notification_received_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  AwesomeNotifications().initialize('resource://drawable/res_app_icon', [
-    NotificationChannel(
+  AwesomeNotifications().initialize(
+    null,
+    [
+      NotificationChannel(
         channelKey: 'basic_channel',
         channelName: 'Basic notifications',
         channelDescription: 'Notification channel for basic tests',
         defaultColor: Color(0xFF9D50DD),
         ledColor: Colors.white)
-  ]);
+    ],
+    debug: true
+  );
+
   runApp(MyApp());
 }
 

@@ -17,9 +17,10 @@ Future<void> showBasicNotification(int id) async {
   ));
 }
 
-Future<void> showNotificationWithActionButtons(
+Future<bool> showNotificationWithActionButtons(
     int id, DateTime scheduleTime) async {
-  await AwesomeNotifications().createNotification(
+
+  return AwesomeNotifications().createNotification(
       content: NotificationContent(
           id: id,
           channelKey: 'basic_channel',
@@ -30,12 +31,12 @@ Future<void> showNotificationWithActionButtons(
           weekday: Platform.isIOS
               ? scheduleTime.weekday
               : scheduleTime.toUtc().weekday,
-          allowWhileIdle: true,
           hour: Platform.isIOS ? scheduleTime.hour : scheduleTime.toUtc().hour,
           minute: Platform.isIOS
               ? scheduleTime.minute
               : scheduleTime.toUtc().minute,
           second: 0,
+          allowWhileIdle: true,
           repeats: true),
       actionButtons: [
         NotificationActionButton(
