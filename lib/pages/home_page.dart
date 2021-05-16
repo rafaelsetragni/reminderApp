@@ -43,7 +43,7 @@ class _HomePageState extends State<HomePage> {
     AwesomeNotifications().actionStream.listen((receivedNotification) {
       Navigator.pushNamed(context, "/notification_received_page");
       Fluttertoast.showToast(
-          msg: 'Msg: ' + receivedNotification.buttonKeyInput,
+          msg: 'Msg: ' + receivedNotification.buttonKeyPressed,
           backgroundColor: Colors.grey[200],
           textColor: Colors.white);
     });
@@ -93,7 +93,12 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(
+          "Sleep reminder",
+        ),
+      ),
       body: Padding(
         padding: EdgeInsets.only(
           top: size.height * 0.02,
@@ -129,7 +134,7 @@ class _HomePageState extends State<HomePage> {
             Container(
               alignment: Alignment.center,
               padding: EdgeInsets.only(
-                top: size.height * 0.02,
+                top: size.height * 0.045,
                 bottom: size.height * 0.02,
                 left: size.width * 0.05,
                 right: size.width * 0.05,
@@ -141,6 +146,7 @@ class _HomePageState extends State<HomePage> {
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: size.height * 0.020,
+                      color: Colors.grey,
                     ),
                   ),
                   ElevatedButton(
