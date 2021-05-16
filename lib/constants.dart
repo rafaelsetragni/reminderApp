@@ -5,6 +5,4 @@ class ConstantKey {
 
   static const String sleepNow = "SLEEP_NOW";
   static const String sleepLater = "SLEEP_LATER";
-
-  static const String goodMorning = "GOOD_MORNING";
 }

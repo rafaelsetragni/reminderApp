@@ -16,9 +16,9 @@ class _HomePageState extends State<HomePage> {
   TimeOfDay _pickedTime;
   bool notificationsAllowed = false;
   @override
-  void initState() async {
+  void initState() {
     super.initState();
-    await AwesomeNotifications().cancelAllSchedules();
+    AwesomeNotifications().cancelAllSchedules();
     AwesomeNotifications().initialize(null, [
       NotificationChannel(
           channelKey: 'basic_channel',
@@ -38,6 +38,14 @@ class _HomePageState extends State<HomePage> {
       String createdSourceText =
           AssertUtils.toSimpleEnumString(receivedNotification.createdSource);
       Fluttertoast.showToast(msg: '$createdSourceText notification displayed');
+    });
+
+    AwesomeNotifications().actionStream.listen((receivedNotification) {
+      Navigator.pushNamed(context, "/notification_received_page");
+      Fluttertoast.showToast(
+          msg: 'Msg: ' + receivedNotification.buttonKeyInput,
+          backgroundColor: Colors.grey[200],
+          textColor: Colors.white);
     });
 
     AwesomeNotifications().dismissedStream.listen((receivedNotification) {
@@ -66,7 +74,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   scheduleSleepReminder(TimeOfDay _pickedTime) async {
-    print(_pickedTime);
     int _notificationId = 1;
     DateTime _dateTime = DateTime(DateTime.now().year, DateTime.now().month,
         DateTime.now().day, _pickedTime.hour, _pickedTime.minute);
@@ -80,7 +87,6 @@ class _HomePageState extends State<HomePage> {
       _notificationId += 1;
       _dateTime = _dateTime.add(Duration(days: 1));
     }
-    print("completed");
   }
 
   @override
