@@ -78,6 +78,7 @@ class _HomePageState extends State<HomePage> {
     DateTime _dateTime = DateTime(DateTime.now().year, DateTime.now().month,
         DateTime.now().day, _pickedTime.hour, _pickedTime.minute);
 
+<<<<<<< Updated upstream
     while (_notificationId < 8) {
       await showNotificationWithActionButtons(
         _notificationId,
@@ -87,6 +88,35 @@ class _HomePageState extends State<HomePage> {
       _notificationId += 1;
       _dateTime = _dateTime.add(Duration(days: 1));
     }
+=======
+    AwesomeNotifications().isNotificationAllowed().then((isAllowed) async {
+      if (!isAllowed) {
+        // Insert here your friendly dialog box before call the request method
+        // This is very important to not harm the user experience
+        if (!await AwesomeNotifications().requestPermissionToSendNotifications()){
+          print('Notifications are not authorized');
+          return;
+        }
+      }
+
+      while (_notificationId < 8) {
+        if (
+          await showNotificationWithActionButtons(
+            _notificationId,
+            _dateTime,
+          )
+        ){
+          print('Notification Scheduled for Day - $_notificationId - $_dateTime');
+        }
+        else {
+          print('Notification $_notificationId could not be created');
+          return;
+        }
+        _notificationId += 1;
+        _dateTime = _dateTime.add(Duration(days: 1));
+      }
+    });
+>>>>>>> Stashed changes
   }
 
   @override

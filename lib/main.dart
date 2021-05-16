@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => HomePage(),
-        "/notification_received_page": (context) => NotificationReceivedPage(),
+        '/notification_received_page': (context) => NotificationReceivedPage(),
       },
     );
   }
