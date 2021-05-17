@@ -6,7 +6,9 @@ import 'package:reminder_app/pages/notification_received_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  AwesomeNotifications().initialize('resource://drawable/res_app_icon', [
+  AwesomeNotifications().initialize(
+    null,
+    [
     NotificationChannel(
         channelKey: 'basic_channel',
         channelName: 'Basic notifications',
@@ -26,7 +28,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => HomePage(),
-        "/notification_received_page": (context) => NotificationReceivedPage(),
+        '/notification_received_page': (context) => NotificationReceivedPage(),
       },
     );
   }

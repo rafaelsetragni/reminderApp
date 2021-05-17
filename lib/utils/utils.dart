@@ -17,9 +17,9 @@ Future<void> showBasicNotification(int id) async {
   ));
 }
 
-Future<void> showNotificationWithActionButtons(
-    int id, DateTime scheduleTime) async {
-  await AwesomeNotifications().createNotification(
+Future<bool> showNotificationWithActionButtons(
+    int id, DateTime scheduleTime) {
+  return AwesomeNotifications().createNotification(
       content: NotificationContent(
           id: id,
           channelKey: 'basic_channel',
@@ -48,9 +48,9 @@ Future<void> showNotificationWithActionButtons(
       ]);
 }
 
-Future<void> showNotificationAtScheduleCron(
-    int id, DateTime scheduleTime) async {
-  await AwesomeNotifications().createNotification(
+Future<bool> showNotificationAtScheduleCron(
+    int id, DateTime scheduleTime) {
+  return AwesomeNotifications().createNotification(
       content: NotificationContent(
         id: id,
         channelKey: 'scheduled',
@@ -104,5 +104,6 @@ Future<void> listScheduledNotifications(BuildContext context) async {
 }
 
 Future<void> cancelAllSchedules() async {
+
   await AwesomeNotifications().cancelAllSchedules();
 }
