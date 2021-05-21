@@ -7,18 +7,8 @@ import 'package:awesome_notifications/awesome_notifications.dart' as Utils
 import 'package:flutter/material.dart';
 import 'package:reminder_app/constants.dart';
 
-Future<void> showBasicNotification(int id) async {
-  await AwesomeNotifications().createNotification(
-      content: NotificationContent(
-    id: id,
-    channelKey: 'basic_channel', //'basic_channel',//'custom_sound',//
-    title: 'Simple Notification',
-    body: 'Simple body',
-  ));
-}
-
 Future<bool> showNotificationWithActionButtons(
-    int id, DateTime scheduleTime) {
+    int id, DateTime scheduleTime) async {
   return AwesomeNotifications().createNotification(
       content: NotificationContent(
           id: id,
@@ -27,29 +17,30 @@ Future<bool> showNotificationWithActionButtons(
           body: 'Sleep early. Stay healthy.',
           payload: {'uuid': 'user-profile-uuid'}),
       schedule: NotificationCalendar(
-          weekday: Platform.isIOS
-              ? scheduleTime.weekday
-              : scheduleTime.toUtc().weekday,
+          // weekday: Platform.isIOS
+          //     ? scheduleTime.weekday
+          //     : scheduleTime.toUtc().weekday,
+          timeZone: await AwesomeNotifications().getLocalTimeZoneIdentifier(),
           allowWhileIdle: true,
-          hour: Platform.isIOS ? scheduleTime.hour : scheduleTime.toUtc().hour,
-          minute: Platform.isIOS
-              ? scheduleTime.minute
-              : scheduleTime.toUtc().minute,
+          hour: scheduleTime.hour,
+          minute: scheduleTime.minute,
           second: 0,
           repeats: true),
       actionButtons: [
         NotificationActionButton(
-            key: ConstantKey.sleepNow, label: 'Okay, Got it', autoCancel: true),
+            key: ConstantKey.sleepNow,
+            label: 'Okay, Got it',
+            enabled: true,
+            buttonType: ActionButtonType.Default),
         NotificationActionButton(
-          key: ConstantKey.sleepLater,
-          label: "I'll sleep later",
-          autoCancel: true,
-        )
+            key: ConstantKey.sleepLater,
+            label: "I'll sleep later",
+            enabled: true,
+            buttonType: ActionButtonType.Default)
       ]);
 }
 
-Future<bool> showNotificationAtScheduleCron(
-    int id, DateTime scheduleTime) {
+Future<bool> showNotificationAtScheduleCron(int id, DateTime scheduleTime) {
   return AwesomeNotifications().createNotification(
       content: NotificationContent(
         id: id,
@@ -104,6 +95,5 @@ Future<void> listScheduledNotifications(BuildContext context) async {
 }
 
 Future<void> cancelAllSchedules() async {
-
   await AwesomeNotifications().cancelAllSchedules();
 }

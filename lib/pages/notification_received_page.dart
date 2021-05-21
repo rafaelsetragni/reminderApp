@@ -13,9 +13,7 @@ class NotificationReceivedPage extends StatelessWidget {
           'Notification',
         ),
         leading: BackButton(
-            color: Colors.white,
-            onPressed: () => Navigator.of(context).pop()
-        ),
+            color: Colors.white, onPressed: () => Navigator.of(context).pop()),
       ),
       body: Center(
         child: Text(

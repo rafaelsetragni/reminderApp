@@ -1,99 +1,108 @@
+import 'dart:io';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
-
+import 'package:notification_permissions/notification_permissions.dart';
 import 'package:reminder_app/utils/utils.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+
+Future<dynamic> myBackgroundMessageHandler(RemoteMessage message) async {
+  if (message != null) print(message);
+}
 
 class HomePage extends StatefulWidget {
   const HomePage({Key key}) : super(key: key);
-
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
   TimeOfDay _pickedTime;
-
+  FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+  NotificationSettings _iosNotificationSettings;
   @override
   void initState() {
     super.initState();
+    initFirebase().then((value) => _initNotification());
+  }
 
-    AwesomeNotifications().createdStream.listen((receivedNotification) {
-      String createdSourceText =
-      AssertUtils.toSimpleEnumString(receivedNotification.createdSource);
-      Fluttertoast.showToast(msg: '$createdSourceText notification created');
+  ///Initialize firebase
+  Future<void> initFirebase() async {
+    if (Platform.isIOS) {
+      _iosNotificationSettings = await _firebaseMessaging.requestPermission(
+        alert: true,
+        announcement: false,
+        badge: true,
+        carPlay: false,
+        criticalAlert: false,
+        provisional: true,
+        sound: true,
+      );
+    }
+    _firebaseMessaging.getToken().then((String token) {
+      if (token != null) {
+        print(token);
+      }
     });
+    handleIncomingFirebaseNotification();
+  }
 
-    AwesomeNotifications().displayedStream.listen((receivedNotification) {
-      String createdSourceText =
-      AssertUtils.toSimpleEnumString(receivedNotification.createdSource);
-      Fluttertoast.showToast(msg: '$createdSourceText notification displayed');
+  void handleIncomingFirebaseNotification() {
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      if (message != null) print(message);
     });
+    FirebaseMessaging.instance
+        .getInitialMessage()
+        .then((RemoteMessage message) {
+      if (message != null) print(message);
+    });
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      if (message != null) print(message);
+    });
+    FirebaseMessaging.onBackgroundMessage(myBackgroundMessageHandler);
+  }
 
+  _initNotification() async {
+    await NotificationPermissions.requestNotificationPermissions(
+        iosSettings: const NotificationSettingsIos(
+            sound: true, badge: true, alert: true));
     AwesomeNotifications().actionStream.listen((receivedNotification) {
       Navigator.pushNamed(context, "/notification_received_page");
       Fluttertoast.showToast(
-          msg: 'Msg: ${ StringUtils.isNullOrEmpty(receivedNotification.buttonKeyPressed, considerWhiteSpaceAsEmpty: true) ? 'normal tap' : receivedNotification.buttonKeyPressed }',
+          msg:
+              'Msg: ${StringUtils.isNullOrEmpty(receivedNotification.buttonKeyPressed, considerWhiteSpaceAsEmpty: true) ? 'normal tap' : receivedNotification.buttonKeyPressed}',
           backgroundColor: Colors.blue[200],
           textColor: Colors.black);
-    });
-
-    AwesomeNotifications().dismissedStream.listen((receivedNotification) {
-      String dismissedSourceText = AssertUtils.toSimpleEnumString(
-          receivedNotification.dismissedLifeCycle);
-      Fluttertoast.showToast(
-          msg: 'Notification dismissed on $dismissedSourceText');
     });
   }
 
   Future<bool> pickScheduleDate(BuildContext context) async {
     TimeOfDay timeOfDay;
-
     timeOfDay = await showTimePicker(
       context: context,
       initialTime: _pickedTime ?? TimeOfDay.now(),
     );
-
-    // if (timeOfDay != null && (_pickedTime != timeOfDay)) {
-    //   setState(() {
-    _pickedTime = timeOfDay;
-    // });
-    //   return true;
-    // }
+    if (timeOfDay != null) _pickedTime = timeOfDay;
     return true;
   }
 
   scheduleSleepReminder(TimeOfDay _pickedTime) async {
-    int _notificationId = 1;
     DateTime _dateTime = DateTime(DateTime.now().year, DateTime.now().month,
         DateTime.now().day, _pickedTime.hour, _pickedTime.minute);
-
     AwesomeNotifications().isNotificationAllowed().then((isAllowed) async {
       if (!isAllowed) {
         // Insert here your friendly dialog box before call the request method
         // This is very important to not harm the user experience
-        if (!await AwesomeNotifications().requestPermissionToSendNotifications()){
+        if (!await AwesomeNotifications()
+            .requestPermissionToSendNotifications()) {
           print('Notifications are not authorized');
           return;
         }
       }
-
-      while (_notificationId < 2) {
-        if (
-        await showNotificationWithActionButtons(
-          _notificationId,
-          _dateTime,
-        )
-        ){
-          print('Notification Scheduled for Day - $_notificationId - $_dateTime');
-        }
-        else {
-          print('Notification $_notificationId could not be created');
-          return;
-        }
-        _notificationId += 1;
-        _dateTime = _dateTime.add(Duration(days: 1));
-      }
+      await showNotificationWithActionButtons(
+        1,
+        _dateTime,
+      );
     });
   }
 
@@ -160,7 +169,8 @@ class _HomePageState extends State<HomePage> {
                   ),
                   ElevatedButton(
                     onPressed: () async {
-                      if (await pickScheduleDate(context)) {
+                      if (await pickScheduleDate(context) &&
+                          _pickedTime != null) {
                         await scheduleSleepReminder(_pickedTime);
                       }
                     },
